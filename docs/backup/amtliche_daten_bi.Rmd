@@ -1,0 +1,80 @@
+---
+title: "Master - Amtliche Daten"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## EDA of 'amtliche Daten der Stadt Bielefeld'
+
+This is a journal to document the process of analysing datasets of the openData portal (Stadt Bielefeld)
+
+```{r library, message =FALSE}
+#checking libraries
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(dplyr)
+library(forcats)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+```
+# Data Preparation
+
+```{r read dataset, data prep}
+#Daten einlesen
+Alter_BI_S <- read.csv("Alters_und_Geschlechtsstruktur2018bis2020.csv", sep=";")
+
+#Werte verändern
+Alter_BI_S$Altersstufe[Alter_BI_S$Altersstufe == "90_und_aelter"]<-"90"
+
+#Format der Werte ändern (Text- in Zahlenformat):
+Alter_BI_S$Altersstufe<-as.numeric(Alter_BI_S$Altersstufe)
+
+#Umbenennung der Variable "Altersstufe" in Alter
+names (Alter_BI_S)[5] <- "Alter"
+
+#Variable umbenennen:
+names (Alter_BI_S) [6] <- "Einwohner"
+
+#Umbennung der Werte im Merkmal Jöllenbeck zu Joellenbeck
+name_joelle_S <- which(Alter_BI_S$Stadtbezirks_Name == unique(Alter_BI_S$Stadtbezirks_Name)[6])
+Alter_BI_S$Stadtbezirks_Name[name_joelle_S] <- "Joellenbeck"
+
+#Teile aus Text-Werten entfernen
+Alter_BI_S$Stadtbezirks_Name<-gsub("Stadtbezirk", "", Alter_BI_S$Stadtbezirks_Name)
+
+#Erzeugung eines künstlichen Individualdatensatzes mit tidyr (pipe)
+Alter_BI_long<-Alter_BI_S %>% 
+  filter(Jahr==2020) %>% 
+  uncount (Einwohner)
+```
+
+# First glimpse
+
+```{r glimpse}
+glimpse(Alter_BI_long)
+```
+
+
+# Histogram group by "Stadtbezirk"
+```{r hist1, echo=FALSE, fig.width=12, fig.height=12}
+p <- Alter_BI_long %>% 
+  select(Alter,Geschlecht,Stadtbezirks_Name) %>% 
+  drop_na() %>% 
+  ggplot(mapping = aes(x=Alter,fill=Geschlecht)) +
+  facet_wrap(~Stadtbezirks_Name)
+
+diagram = p + geom_histogram() 
+
+diagram + labs(title="Alterverteilung in Stadt Bielefeld 2019",
+               subtitle="aufgeteilt nach Stadtbezirke und Geschlecht",
+               caption="Quelle: OpenData Portal der Stadt Bielefeld")+
+  xlab("Alter in Jahren") +
+  ylab("Absolute Anzahl") 
+
+```

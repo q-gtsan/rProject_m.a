@@ -11,7 +11,7 @@
 
 
 
-<title>A Website</title>
+<title>Master - Amtliche Daten</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -258,16 +258,72 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div id="header">
+<div id="section-header">
 
 
 
-<h1 class="title toc-ignore">A Website</h1>
+<h1 class="title toc-ignore">Master - Amtliche Daten</h1>
 
 </div>
 
 
-<p>Hello, Website!</p>
+<div id="section-eda-of-amtliche-daten-der-stadt-bielefeld" class="section level2">
+<h2>EDA of ‘amtliche Daten der Stadt Bielefeld’</h2>
+<p>This is a journal to document the process of analysing datasets of the openData portal (Stadt Bielefeld)</p>
+<pre class="r"><code>#checking libraries
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(dplyr)
+library(forcats)
+library(tidyr)
+library(ggplot2)
+library(stringr)</code></pre>
+</div>
+<div id="section-data-preparation" class="section level1">
+<h1>Data Preparation</h1>
+<pre class="r"><code>#Daten einlesen
+Alter_BI_S &lt;- read.csv(&quot;Alters_und_Geschlechtsstruktur2018bis2020.csv&quot;, sep=&quot;;&quot;)
+
+#Werte verändern
+Alter_BI_S$Altersstufe[Alter_BI_S$Altersstufe == &quot;90_und_aelter&quot;]&lt;-&quot;90&quot;
+
+#Format der Werte ändern (Text- in Zahlenformat):
+Alter_BI_S$Altersstufe&lt;-as.numeric(Alter_BI_S$Altersstufe)
+
+#Umbenennung der Variable &quot;Altersstufe&quot; in Alter
+names (Alter_BI_S)[5] &lt;- &quot;Alter&quot;
+
+#Variable umbenennen:
+names (Alter_BI_S) [6] &lt;- &quot;Einwohner&quot;
+
+#Umbennung der Werte im Merkmal Jöllenbeck zu Joellenbeck
+name_joelle_S &lt;- which(Alter_BI_S$Stadtbezirks_Name == unique(Alter_BI_S$Stadtbezirks_Name)[6])
+Alter_BI_S$Stadtbezirks_Name[name_joelle_S] &lt;- &quot;Joellenbeck&quot;
+
+#Teile aus Text-Werten entfernen
+Alter_BI_S$Stadtbezirks_Name&lt;-gsub(&quot;Stadtbezirk&quot;, &quot;&quot;, Alter_BI_S$Stadtbezirks_Name)
+
+#Erzeugung eines künstlichen Individualdatensatzes mit tidyr (pipe)
+Alter_BI_long&lt;-Alter_BI_S %&gt;% 
+  filter(Jahr==2020) %&gt;% 
+  uncount (Einwohner)</code></pre>
+</div>
+<div id="section-first-glimpse" class="section level1">
+<h1>First glimpse</h1>
+<pre class="r"><code>glimpse(Alter_BI_long)</code></pre>
+<pre><code>## Rows: 338,980
+## Columns: 5
+## $ Jahr              &lt;int&gt; 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020…
+## $ Stadtbezirks_ID   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ Stadtbezirks_Name &lt;chr&gt; &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; …
+## $ Geschlecht        &lt;chr&gt; &quot;maennlich&quot;, &quot;maennlich&quot;, &quot;maennlich&quot;, &quot;maennlich&quot;, …
+## $ Alter             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</code></pre>
+</div>
+<div id="section-histogram-group-by-stadtbezirk" class="section level1">
+<h1>Histogram group by “Stadtbezirk”</h1>
+<iframe src ="https://q-gtsan.shinyapps.io/hist_amt_alter_bi/" height=600px width=1200px />
+</div>
 
 <p>Content by Quy Glindemann-Tsan, 2021.</p>
 
@@ -292,7 +348,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-  window.buildTabsets("TOC");
+  window.buildTabsets("section-TOC");
 });
 
 $(document).ready(function () {

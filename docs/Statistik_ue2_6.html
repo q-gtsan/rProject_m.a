@@ -11,7 +11,7 @@
 
 
 
-<title>A Website</title>
+<title>Statistik</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -262,12 +262,88 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">A Website</h1>
+<h1 class="title toc-ignore">Statistik</h1>
 
 </div>
 
 
-<p>Hello, Website!</p>
+<p><br/><br/></p>
+<div id="aufgabe-6" class="section level2">
+<h2>Aufgabe 6</h2>
+<p><strong>Für diese Aufgaben werden amtliche Daten der Stadt Bielefeld verwendet. Diese sind auf dem openData Protal der Stadt Bielefeld zu finden. Hierbei werden die Merkmale Anteil der Haushalte mit gymnasial Empfehlung und Anteil der Haushalte mit dem Grad des MIgrationshindergrundes. An dieser Stelle ist anzumerken, dass die Daten aggregiert vorliegen - es ist kein Individualdatensatz.</strong> <a href="https://open-data.bielefeld.de/dataset/bildungsrelevante-belastungen">Open Data - Bildungsrelevante Belastungen</a></p>
+<pre class="r"><code>#checking libraries
+library(tidyverse)
+library(tidyr)
+library(readxl)
+library(dplyr)
+library(ggplot2)</code></pre>
+<div id="daten-preparation-einlesen" class="section level3">
+<h3>Daten Preparation + Einlesen</h3>
+<pre class="r"><code>### Daten einlesen
+library (readxl) #Paket speziell für Excel-Daten
+Belastungen &lt;-read_excel(&quot;Datengrundlage Bildungsbelastung.xlsx&quot;)
+
+###Variablen für Auswertung auswählen
+library (dplyr)
+Belastungen &lt;- Belastungen %&gt;%
+  select (Schuleinzugsgebiete, Schuleinzug_Name, B_Haushalte, B_Migration, B_Alleinerziehend, B_Mehrfamilienhäuser, SGB2, Empf_Haupt, Empf_Real, Empf_Gym)
+
+### Neue Variablen erstellen
+## Anzahl der Schüler pro Schule im Übergang auf weiterführende Schulen
+Belastungen&lt;-Belastungen %&gt;% 
+  mutate (Anzahl_SuS=Empf_Haupt+Empf_Real+Empf_Gym)
+
+##Anteil der jeweiligen empfohlenen Schulformen an Schülern insgesamt
+Belastungen&lt;- Belastungen %&gt;% 
+  mutate (Anteil_Haupt=Empf_Haupt/Anzahl_SuS,
+          Anteil_Real=Empf_Real/Anzahl_SuS,
+          Anteil_Gym=Empf_Gym/Anzahl_SuS)</code></pre>
+</div>
+<div id="das-streudiagramm" class="section level3">
+<h3>Das Streudiagramm</h3>
+<pre class="r"><code>#a) Streudiagram der beiden Variablen
+library(ggplot2)
+p &lt;- Belastungen %&gt;% 
+  select(B_Migration, Anteil_Gym) %&gt;% 
+  ggplot(mapping = aes(y=Anteil_Gym, 
+                       x=B_Migration))
+  
+# die Funktion geom_point() hat ein size Argument
+p + geom_point(size = 3) + labs(title=&quot;Streudiagram&quot;,
+               subtitle=&quot;Merkmale: Migrationsanteil und gymnasial Empfehlung der Haushalte&quot;,
+               caption=&quot;Quelle: OpenData Portal der Stadt Bielefeld&quot;)+
+  xlab(&quot;Migrationsanteil in den Haushalten&quot;) +
+  ylab(&quot;Anteil der gymnasial Empfehlung in den Haushalten&quot;) </code></pre>
+<p><img src="Statistik_ue2_6_files/figure-html/scatterplot-1.png" width="672" /></p>
+</div>
+<div id="der-korrelationskoeffizient" class="section level3">
+<h3>Der Korrelationskoeffizient</h3>
+<pre class="r"><code>cor(Belastungen$Anteil_Gym, Belastungen$B_Migration)</code></pre>
+<pre><code>## [1] -0.7736984</code></pre>
+<p><strong>Antwort: Der Korrelationskoeffizient betrag -0.774. Somit befindet sich hier eine negative Korrelation mit einem mittleren bis starken Zusammenhang.Es ist für die Daten folgendes anzunehmen. Je höher der Migrationsanteil in den jeweiligen Haushalten ist, umso kleiner ist der Anteil an gymnasial Empfehlungen in den dazugehörigen Haushalten.</strong></p>
+<p><br/><br/></p>
+</div>
+</div>
+<div id="aufgabe-7" class="section level2">
+<h2>Aufgabe 7</h2>
+<p><strong>1. Schlechte Beispiel</strong> <br/><br/> Quelle: <a href="https://www.pgpf.org/sites/default/files/0070_discretionary_spending_categories-full.gif" class="uri">https://www.pgpf.org/sites/default/files/0070_discretionary_spending_categories-full.gif</a></p>
+<div class="figure">
+<img src="figures/pie-Chart_pp_foundation.gif" style="width:70.0%" alt="" />
+<p class="caption">Figure 1</p>
+</div>
+<p>Antwort: Unübersichtliche Farbwahl der “Kuchenteile”, prozentuale Anteile sind ebenfalls nicht erkennbar. <br/><br/> <strong>2. Schlechte Beispiel</strong> <br/><br/> Quelle: <a href="https://i.redd.it/3ubrij7v3c081.jpg" class="uri">https://i.redd.it/3ubrij7v3c081.jpg</a>, Hauptquelle: ARD.de</p>
+<div class="figure">
+<img src="figures/ard_covid.jpg" style="width:70.0%" alt="" />
+<p class="caption">Figure 2</p>
+</div>
+<p>Antwort: In diesem Fall ist ebenfalls die Farbwahl sehr ungünstig, insbesondere vor dem Hintergrund der Einteilung der Anzahl und der Größe der Farbbereiche.</p>
+<p><br/><br/> <strong>3. Schlechte Beispiel</strong> <br/><br/> Quelle: <a href="https://digitalpresent.tagesspiegel.de/die-besten-erklaerstuecke-zum-coronavirus-weltweit" class="uri">https://digitalpresent.tagesspiegel.de/die-besten-erklaerstuecke-zum-coronavirus-weltweit</a>, Hauptquelle: Financial Times</p>
+<div class="figure">
+<img src="figures/ft-corona.webp" style="width:70.0%" alt="" />
+<p class="caption">Figure 3</p>
+</div>
+<p>Antwort: An diesem Beispiel ist der Plot sehr beladen mit Informationen. Die einzelnen Linien sind gut voneinander zu trennen.</p>
+</div>
 
 <p>Content by Quy Glindemann-Tsan, 2021.</p>
 
