@@ -11,7 +11,7 @@
 
 
 
-<title>Master - Amtliche Daten</title>
+<title>Amtliche Daten</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -245,7 +245,10 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="amtliche_daten_bi.html">Amtliche Daten Bielefeld</a>
+  <a href="amtliche_daten_bi.html">Histogram</a>
+</li>
+<li>
+  <a href="chloroplethen_corona.html">Chloroplethen Corona</a>
 </li>
 <li>
   <a href="Statistik_ue2_6.html">Statistik - Aufgabe 2 - Teil 6</a>
@@ -262,13 +265,13 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Master - Amtliche Daten</h1>
+<h1 class="title toc-ignore">Amtliche Daten</h1>
 
 </div>
 
 
-<div id="section-eda-of-amtliche-daten-der-stadt-bielefeld" class="section level2">
-<h2>EDA of ‘amtliche Daten der Stadt Bielefeld’</h2>
+<div id="section-histogram-für-amtliche-daten-der-stadt-bielefeld" class="section level2">
+<h2>Histogram für amtliche Daten der Stadt Bielefeld’</h2>
 <p>This is a journal to document the process of analysing datasets of the openData portal (Stadt Bielefeld)</p>
 <pre class="r"><code>#checking libraries
 library(tidyverse)
@@ -279,9 +282,8 @@ library(forcats)
 library(tidyr)
 library(ggplot2)
 library(stringr)</code></pre>
-</div>
-<div id="section-data-preparation" class="section level1">
-<h1>Data Preparation</h1>
+<div id="section-data-preparation" class="section level3">
+<h3>Data Preparation</h3>
 <pre class="r"><code>#Daten einlesen
 Alter_BI_S &lt;- read.csv(&quot;Alters_und_Geschlechtsstruktur2018bis2020.csv&quot;, sep=&quot;;&quot;)
 
@@ -309,8 +311,8 @@ Alter_BI_long&lt;-Alter_BI_S %&gt;%
   filter(Jahr==2020) %&gt;% 
   uncount (Einwohner)</code></pre>
 </div>
-<div id="section-first-glimpse" class="section level1">
-<h1>First glimpse</h1>
+<div id="section-first-glimpse" class="section level3">
+<h3>First glimpse</h3>
 <pre class="r"><code>glimpse(Alter_BI_long)</code></pre>
 <pre><code>## Rows: 338,980
 ## Columns: 5
@@ -319,10 +321,8 @@ Alter_BI_long&lt;-Alter_BI_S %&gt;%
 ## $ Stadtbezirks_Name &lt;chr&gt; &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; Mitte&quot;, &quot; …
 ## $ Geschlecht        &lt;chr&gt; &quot;maennlich&quot;, &quot;maennlich&quot;, &quot;maennlich&quot;, &quot;maennlich&quot;, …
 ## $ Alter             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…</code></pre>
-</div>
-<div id="section-histogram-group-by-stadtbezirk" class="section level1">
-<h1>Histogram group by “Stadtbezirk”</h1>
 <iframe src ="https://q-gtsan.shinyapps.io/hist_amt_alter_bi/" height=600px width=1200px />
+</div>
 </div>
 
 <p>Content by Quy Glindemann-Tsan, 2021.</p>
